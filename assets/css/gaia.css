@@ -67,7 +67,7 @@ h6,
 .content-blog p {
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
-  font-family: "Cambo", "Times New Roman", serif;
+  font-family: "Muli", "Times New Roman", serif;
 }
 h1 a,
 .h1 a,
@@ -222,7 +222,7 @@ a:hover {
 }
 
 .separator {
-  color: #c5a47e;
+  color: #00abc0;
   margin: 0 auto 20px;
   max-width: 240px;
   text-align: center;
@@ -233,7 +233,7 @@ a:hover {
   width: 40%;
   content: " ";
   margin-top: 10px;
-  border: 1px solid #c5a47e;
+  border: 1px solid #00abc0;
 }
 .separator:before {
   float: left;
