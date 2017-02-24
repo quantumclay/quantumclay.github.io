@@ -17,6 +17,21 @@
     <!-- <link href='https://fonts.googleapis.com/css?family=Cambo|Poppins:400,600' rel='stylesheet' type='text/css'> -->
     <link href="http://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" rel="stylesheet">
     <link href="assets/css/fonts/pe-icon-7-stroke.css" rel="stylesheet">
+    <style>
+        #video-background {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            z-index: -100;
+            -webkit-transform: translateX(-50%) translateY(-50%);
+            transform: translateX(-50%) translateY(-50%);
+            background-size: cover;
+        }
+    </style>
 </head>
 
 <body>
@@ -33,12 +48,15 @@
     </nav>
 
 
-    <div class="section section-header">
-        <div class="parallax">
-            <div class="image"
-                style="background-image: url('assets/img/bg.jpg')">
+    <div class="section section-header video-section">
+        <div class="parallax filter filter-color-blue">
+            <div class="image">
+                <video autoplay loop muted id="video-background">
+                    <source src="assets/media/city_bg.mp4" type="video/mp4">
+                </video>
             </div>
             <div class="container">
+                <canvas class="dots-js" style="z-index:100; position: absolute;"></canvas>
                 <div class="content">
                     <div class="title-area">
                         <p></p>
@@ -116,7 +134,7 @@
 
     <div class="section section-our-team-freebie">
         <div class="parallax filter filter-color-black">
-            <div class="image" style="background-image:url('assets/img/header-2.jpeg')">
+            <div class="image" style="background-image:url('assets/img/bg.jpg')">
             </div>
             <div class="container">
                 <div class="content">
@@ -145,6 +163,9 @@
                                     </div>
                                     <div class="col-md-4">
                                         <div class="card card-member">
+                                            <div class="header">
+                                                <div style="background-image:url('assets/img/colors.jpg'); width: 100%; height: 150px;"></div>
+                                            </div>
                                             <div class="content">                                                
                                                 <div class="description">
                                                     <h3 class="title">Cores</h3>
@@ -371,5 +392,115 @@
 
 <!--   file where we handle all the script from the Gaia - Bootstrap Template   -->
 <script type="text/javascript" src="assets/js/gaia.js"></script>
+<script>
+    //CANVAS
+$(function(){
+    var canvas = document.querySelector('canvas.dots-js'),
+      ctx = canvas.getContext('2d'),
+      color = '#FFF';
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    canvas.style.display = 'block';
+    ctx.fillStyle = color;
+    ctx.lineWidth = .2;
+    ctx.strokeStyle = color;
+
+    var mousePosition = {
+        x: 30 * canvas.width / 100,
+        y: 30 * canvas.height / 100
+    };
+
+    var dots = {
+        nb: 600,
+        distance: 100,
+        d_radius: 50,
+        array: []
+    };
+
+    function Dot(){
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+
+        this.vx = -.5 + Math.random();
+        this.vy = -.5 + Math.random();
+
+        this.radius = Math.random();
+    }
+
+    Dot.prototype = {
+        create: function(){
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+            ctx.fill();
+        },
+
+        animate: function(){
+            for(i = 0; i < dots.nb; i++){
+
+                var dot = dots.array[i];
+
+                if(dot.y < 0 || dot.y > canvas.height){
+                    dot.vx = dot.vx;
+                    dot.vy = - dot.vy;
+                }
+                else if(dot.x < 0 || dot.x > canvas.width){
+                    dot.vx = - dot.vx;
+                    dot.vy = dot.vy;
+                }
+                dot.x += dot.vx;
+                dot.y += dot.vy;
+            }
+        },
+
+        line: function(){
+            for(i = 0; i < dots.nb; i++){
+                for(j = 0; j < dots.nb; j++){
+                    i_dot = dots.array[i];
+                    j_dot = dots.array[j];
+
+                    if((i_dot.x - j_dot.x) < dots.distance && (i_dot.y - j_dot.y) < dots.distance && (i_dot.x - j_dot.x) > - dots.distance && (i_dot.y - j_dot.y) > - dots.distance){
+                        if((i_dot.x - mousePosition.x) < dots.d_radius && (i_dot.y - mousePosition.y) < dots.d_radius && (i_dot.x - mousePosition.x) > - dots.d_radius && (i_dot.y - mousePosition.y) > - dots.d_radius){
+                            ctx.beginPath();
+                            ctx.moveTo(i_dot.x, i_dot.y);
+                            ctx.lineTo(j_dot.x, j_dot.y);
+                            ctx.stroke();
+                            ctx.closePath();
+                        }
+                    }
+                }
+            }
+        }
+    };
+
+    function createDots(){
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for(i = 0; i < dots.nb; i++){
+            dots.array.push(new Dot());
+            dot = dots.array[i];
+
+            dot.create();
+        }
+
+        dot.line();
+        dot.animate();
+    }
+
+    $("canvas.dots-js").on('mousemove mouseleave', function(e){
+        if(e.type == 'mousemove'){
+            mousePosition.x = e.pageX;
+            mousePosition.y = e.pageY;
+        }
+        if(e.type == 'mouseleave'){
+            mousePosition.x = canvas.width / 2;
+            mousePosition.y = canvas.height / 2;
+        }
+    });
+    setInterval(createDots, 1000/30);   
+
+    $(".player").mb_YTPlayer();
+});
+
+</script>
+<script src="assets/js/jquery.mb.YTPlayer.js"></script>
 
 </html>
